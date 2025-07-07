@@ -18,12 +18,12 @@ Date: 2019.08.22
 '''
 import numpy as np
 import keras
-from keras.models import  load_model
+from keras.models import load_model
 from tc_II_predict import get_component_vector
 import argparse, sys
 import matplotlib.pyplot as plt
 
-from model import  ATCNN_Ef_model
+from model import ATCNN_Ef_model, ATCNN_Tc_model
 
 def read_input(train_setfile, readlabel):
     f = open(train_setfile,'r')
@@ -92,24 +92,25 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     
     model = ATCNN_Ef_model()
+    # model = ATCNN_Tc_model()
     print(model.summary())
-    #sys.exit(0)
     
     if opt.train:
         opt.readlabel = True
         x_data, y_data, _ = read_input(opt.datapath, opt.readlabel)
         x_train, y_train, x_predict, y_predict = data_split(x_data, y_data, split_ratio=opt.ratio)
-        x_train = np.reshape(x_train,(len(x_train),10,10,1))     
-        x_predict = np.reshape(x_predict,(len(x_predict),10,10,1))     
-        
+        x_train = np.reshape(x_train,(len(x_train),10,10,1))
+        x_predict = np.reshape(x_predict,(len(x_predict),10,10,1))
+        y_train = np.array(y_train)
+        y_predict = np.array(y_predict)
         model.fit(x_train, y_train, validation_split=0.02, batch_size=opt.batchsize, epochs=opt.niter)
-        model.save('model.h5')
+        model.save('model.keras')
         loss = model.evaluate(x_predict, y_predict, batch_size=opt.batchsize)
         y_calc = model.predict(x_predict, batch_size=opt.batchsize)
         print('test set loss:',loss)
     
     if opt.predict:
-        model = load_model('model.h5')
+        model = load_model('model.keras')
         x_predict, y_predict, formula = read_input(opt.datapath, opt.readlabel)
         n_sample = len(x_predict)
         if n_sample < opt.batchsize:
