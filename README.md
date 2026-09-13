@@ -1,3 +1,5 @@
+
+
 # ATCNN
 ATCNN models
 
@@ -10,3 +12,5 @@ Example of Usage:
 Download all the files in a folder and then execute:
 
 python tc_II_predict.py MgB2
+
+Note: tc_model_II.h5 must be in the same folder.
